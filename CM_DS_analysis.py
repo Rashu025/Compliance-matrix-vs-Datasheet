@@ -72,7 +72,7 @@ df_new13=  df_new3[df_new3["DS_Symbol"].str.contains("Symbol") == False]
 
 
 column_names2=['CM_Symbol','CM_Parameter','CM_Conditions','CM_Spec_guar','CM_Min','CM_Typ','CM_Max','CM_Unit',
-              'Unique Identifier','NXP Datasheet']
+              'Unique Identifier','Datasheet']
 
 
 
@@ -94,7 +94,7 @@ new_header = df2.iloc[0] #grab the first row for the header
 df2 = df2[1:] #take the data less the header row
 df2.columns = new_header #set the header row as the df header
 print(new_header)
-df2 = df2[["Symbol","Parameter","Conditions","Specification Guaranteed by","Min","Typ","Max","Unit","Unique Identifier", "NXP Datasheet"]]
+df2 = df2[["Symbol","Parameter","Conditions","Specification Guaranteed by","Min","Typ","Max","Unit","Unique Identifier", "Datasheet"]]
 df2.columns=column_names2
 #df2.to_excel ('CM.xlsx', index = None, header=True) ## set current directory and adjust
 #print(df2)
@@ -118,7 +118,7 @@ df3['CM_Spec_guar']=df3['CM_Spec_guar'].apply(str)
 df3['Unique Identifier']=df3['Unique Identifier'].apply(str)
 df3['CM_Unit']=df3['CM_Unit'].apply(str)
 df3_Uni=df3["Unique Identifier"]
-df3["NXP Datasheet"]=df3["NXP Datasheet"].apply(str)
+df3["Datasheet"]=df3["Datasheet"].apply(str)
 df3_Uni=pd.Series(df3_Uni)
 
 
@@ -131,7 +131,7 @@ DS_Parameter_array=df3["DS_Parameter"].to_numpy()
 DS_Conditions_array=df3["DS_Conditions"].to_numpy()
 DS_Spec_guar_array=df3["DS_Spec_guar"].to_numpy()
 DS_Unit_array=df3["DS_Unit"].to_numpy()
-DS_NXP_Datasheet_array=df3["NXP Datasheet"].to_numpy()
+DS_Datasheet_array=df3["Datasheet"].to_numpy()
 df3_Uni_array=df3_Uni.to_numpy()
 
 
@@ -145,7 +145,7 @@ DS_Conditions_array = DS_Conditions_array.astype('str')
 DS_Spec_guar_array = DS_Spec_guar_array.astype('str')
 DS_Unit_array = DS_Unit_array.astype('str')
 df3_Uni_array = df3_Uni_array.astype('str')
-DS_NXP_Datasheet_array = DS_NXP_Datasheet_array.astype('str')
+DS_Datasheet_array = DS_Datasheet_array.astype('str')
 
 #Handling missing values
 DS_Typ_array[DS_Typ_array==''] = 'nan'
@@ -157,7 +157,7 @@ DS_Conditions_array[DS_Conditions_array==''] = 'nan'
 DS_Spec_guar_array[DS_Spec_guar_array==''] = 'nan'
 DS_Unit_array[DS_Unit_array==''] = 'nan'
 df3_Uni_array[df3_Uni_array==''] = 'nan'
-DS_NXP_Datasheet_array[DS_NXP_Datasheet_array==''] = 'nan'
+DS_Datasheet_array[DS_Datasheet_array==''] = 'nan'
 
 
 df3['DS_Min']=DS_Min_array
@@ -168,8 +168,8 @@ df3['DS_Parameter']=DS_Parameter_array
 df3['DS_Conditions']=DS_Conditions_array
 df3['DS_Spec_guar']=DS_Spec_guar_array
 df3['DS_Unit']=DS_Unit_array
-df3['NXP Datasheet']=DS_NXP_Datasheet_array
-df3.rename(columns={"NXP Datasheet":"NXP_Datasheet"}, inplace = True)
+df3['Datasheet']=DS_Datasheet_array
+df3.rename(columns={"Datasheet":"Datasheet"}, inplace = True)
 
 
 df3['Symbol OK'] = df3['DS_Symbol'] == df3['CM_Symbol']
@@ -184,9 +184,9 @@ df3['Max OK'] = df3['CM_Max'] == df3['DS_Max']
 df3['Unit OK'] = df3['DS_Unit'] == df3['CM_Unit']
 
 #Error for UIDs not included in Datasheet
-df3["Datasheet_error"] = df3[["NXP_Datasheet", "DS_Min","DS_Max","DS_Typ"]].apply(
+df3["Datasheet_error"] = df3[["Datasheet", "DS_Min","DS_Max","DS_Typ"]].apply(
     lambda x: "Unique Identifier should be there in Datasheet"
-    if (x.NXP_Datasheet == "Yes" and x.DS_Min == "nan" and x.DS_Max == "nan" and x.DS_Typ == "nan")
+    if (x.Datasheet == "Yes" and x.DS_Min == "nan" and x.DS_Max == "nan" and x.DS_Typ == "nan")
     else "No action needed",
     axis=1
 )
@@ -208,12 +208,12 @@ def highlight_cells(val, color_if_true, color_if_false):
     else : color = color_if_false
     return 'background-color: {}'.format(color)
 
-output_file= inputdir + "\\"+str(today)+"-NXP-CM_VS_DS.xlsx"
-Unstyled= inputdir + "\\"+str(today)+"Uncolored-NXP-CM_VS_DS.xlsx"
+output_file= inputdir + "\\"+str(today)+"-New-CM_VS_DS.xlsx"
+Unstyled= inputdir + "\\"+str(today)+"Uncolored-New-CM_VS_DS.xlsx"
 
 column_names3=['DS-Symbol','DS-Parameter','DS-Conditions','DS-Spec-guar','DS-Min','DS-Typ','DS-Max','DS-Unit',
               'Unique Identifier','CM-Symbol','CM-Parameter','CM-Conditions','CM-Spec-guar','CM-Min','CM-Typ','CM-Max','CM-Unit',
-              'NXP Datasheet','Symbol OK','Parameter OK','Conditions OK','Specifications OK','Min OK', 'Typ OK','Max OK','Unit OK','Datasheet-error','NDS-Identifier']
+              'Datasheet','Symbol OK','Parameter OK','Conditions OK','Specifications OK','Min OK', 'Typ OK','Max OK','Unit OK','Datasheet-error','NDS-Identifier']
 df3.columns=column_names3
 df3.style.applymap(highlight_cells, color_if_true='yellow', color_if_false='white' ,subset=['Symbol OK','Parameter OK','Conditions OK','Specifications OK','Min OK', 'Typ OK','Max OK','Unit OK','Datasheet-error'])\
         .to_excel(output_file, engine='openpyxl')
